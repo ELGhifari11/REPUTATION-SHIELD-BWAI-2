@@ -1384,6 +1384,132 @@ app.post('/api/simulator/reset', (req, res) => {
   res.json({success: true, message: 'Database simulator berhasil di-reset ke kondisi awal.'});
 });
 
+// Stateless API for client-side sentiment analysis using Gemini (prevents client-side API leaks & DB errors)
+app.post('/api/stateless/analyze-sentiment', async (req, res) => {
+  const { comment, rating, businessName, category } = req.body;
+  try {
+    const analysis = await analyzeReviewWithGemini(comment || '', Number(rating || 5), businessName || 'Cabang', category || 'restoran');
+    res.json({ success: true, analysis });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Stateless API for client-side AI drafting using Gemini (prevents client-side API leaks & DB errors)
+app.post('/api/stateless/ai-draft', async (req, res) => {
+  const { review, tenant } = req.body;
+  try {
+    const draft = await generateAiReply(review, tenant);
+    res.json({ success: true, draft });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Stateless API for client-side multi-channel notification dispatch (bypasses browser CORS restrictions completely)
+app.post('/api/stateless/dispatch-notifications', async (req, res) => {
+  const { tenant, review, analysis, isTest } = req.body;
+  if (!tenant || !review) {
+    return res.status(400).json({ error: 'Data tenant dan review tidak lengkap.' });
+  }
+
+  const conf = tenant.notificationConfigs;
+  const logsArr: any[] = [];
+
+  const addLog = (channel: string, payload: string, status: 'success' | 'failed', errorMessage: string | null = null) => {
+    logsArr.push({
+      id: 'log-' + Math.random().toString(36).substr(2, 9),
+      tenantId: tenant.id,
+      tenantName: tenant.name,
+      eventType: 'notification_sent',
+      channel,
+      payload,
+      status,
+      errorMessage,
+      createdAt: new Date().toISOString()
+    });
+  };
+
+  try {
+    // 1. DISCORD TRIGGER
+    if (conf.discordEnabled && conf.discordWebhookUrl) {
+      const payload = {
+        username: "Reputation Shield Bot",
+        avatar_url: "https://images.unsplash.com/photo-1557200134-90327ee9fafa?auto=format&fit=crop&w=150&q=80",
+        embeds: [{
+          title: isTest 
+            ? `⚠️ [TEST ALERT] Uji Coba Saluran Reputation Guard di ${tenant.name}!` 
+            : `Crisis Alert: Review Negatif Terdeteksi di ${tenant.name}!`,
+          description: isTest 
+            ? `Pesan uji coba koneksi dari dasbor pengaturan.` 
+            : `Krisis reputasi terdeteksi! Segera respon kepuasan pelanggan agar sentimen negatif tidak merugikan brand.`,
+          color: review.rating <= 2 ? 16711680 : 16776960, // Merah / Kuning
+          fields: [
+            { name: "Nama Cabang/Tenant", value: tenant.name, inline: true },
+            { name: "Nama Pelanggan", value: review.reviewerName, inline: true },
+            { name: "GMaps Rating", value: `${'⭐'.repeat(review.rating)} (${review.rating}/5)`, inline: true },
+            { name: "Komentar Review", value: `"${review.comment}"` },
+            { name: "Analisis Sentimen AI", value: analysis ? `${analysis.sentimentLabel.toUpperCase()} (${analysis.sentimentScore}/100)` : "Neutral (50/100)", inline: true },
+            { name: "Rekomendasi Kontak CS", value: tenant.aiConfig?.supportContact || "Tidak terkonfigurasi" }
+          ],
+          timestamp: new Date().toISOString()
+        }]
+      };
+
+      const resp = await fetch(conf.discordWebhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (resp.status === 204 || resp.status === 200 || resp.ok) {
+        addLog('discord', `Berhasil mengirim alert review ke Discord Webhook.`, 'success');
+      } else {
+        addLog('discord', `Gagal mengirim alert review ke Discord Webhook.`, 'failed', `HTTP Status: ${resp.status}`);
+      }
+    }
+
+    // 2. TELEGRAM TRIGGER
+    if (conf.telegramEnabled && conf.telegramBotToken && conf.telegramChatId) {
+      const starSymbols = '⭐'.repeat(review.rating);
+      const headerText = isTest 
+        ? `⚠️ *REPUTATION SHIELD SIMULATED TEST ALERT*` 
+        : (review.rating <= 2 ? `🚨 *REPUTATION SHIELD CRISIS ALERT*` : `✨ *NEW REPUTATION REVIEW RECEIVED*`);
+      
+      const textMessage = `${headerText}\n` +
+        `----------------------------------------\n` +
+        `🏢 *Usaha/Tenant:* ${tenant.name}\n` +
+        `👤 *Reviewer:* ${review.reviewerName}\n` +
+        `⭐ *Rating:* ${starSymbols} (${review.rating}/5)\n` +
+        `💬 *Ulasan:* "${review.comment}"\n\n` +
+        `🤖 *Sentimen AI:* ${analysis ? analysis.sentimentLabel.toUpperCase() : 'NEUTRAL'} (${analysis ? analysis.sentimentScore : 50}/100)\n` +
+        `📌 *Level Krisis:* ${review.rating <= 2 ? 'YA (Tinggi)' : 'TIDAK'}\n\n` +
+        `📞 *Kontak Penanganan:* ${tenant.aiConfig?.supportContact || '-'}`;
+
+      const resp = await fetch(`https://api.telegram.org/bot${conf.telegramBotToken}/sendMessage`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: conf.telegramChatId,
+          text: textMessage,
+          parse_mode: 'Markdown'
+        })
+      });
+
+      if (resp.status === 200 || resp.ok) {
+        addLog('telegram', `Berhasil mengirim alert review ke Telegram Chat ID: ${conf.telegramChatId}.`, 'success');
+      } else {
+        const respText = await resp.text().catch(() => '');
+        addLog('telegram', `Gagal mengirim alert ke Telegram.`, 'failed', `HTTP Status: ${resp.status} - ${respText}`);
+      }
+    }
+
+    res.json({ success: true, logs: logsArr });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Gagal mendisparasi notifikasi: ' + err.message });
+  }
+});
+
 // Setup Vite Dev server or Serve static files
 const startServer = async () => {
   if (isVercel) {

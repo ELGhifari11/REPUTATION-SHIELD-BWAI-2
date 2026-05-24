@@ -296,7 +296,28 @@ export function setupMockApiInterceptors() {
           if (!tenantObj) return makeJSONResponse({ error: 'Tenant tidak ditemukan' }, 404);
 
           const { reviewerName, rating, comment } = bodyData;
-          const analysis = analyzeSentimentLocal(comment || '', Number(rating || 5));
+          
+          let analysis = analyzeSentimentLocal(comment || '', Number(rating || 5));
+          try {
+            const semRes = await originalFetch('/api/stateless/analyze-sentiment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                comment: comment || '',
+                rating: Number(rating || 5),
+                businessName: tenantObj.name,
+                category: tenantObj.category
+              })
+            });
+            if (semRes.ok) {
+              const semData = await semRes.json();
+              if (semData.success && semData.analysis) {
+                analysis = semData.analysis;
+              }
+            }
+          } catch (err) {
+            console.warn("Fell back to client-side rule-based sentiment on error:", err);
+          }
 
           const newRev: Review = {
             id: 'review-' + uuid(),
@@ -333,44 +354,56 @@ export function setupMockApiInterceptors() {
             createdAt: new Date().toISOString()
           });
 
-          // Telegram/Discord notification trigger
+          // Telegram/Discord notification trigger (CORS-free serverless proxy dispatch)
           const conf = tenantObj.notificationConfigs;
-          const webhookMsg = `📢 **Reputation Shield Alert** - Ulasan Baru!\nUsaha/Tenant: **${tenantObj.name}**\nReviewer: **${newRev.reviewerName}**\nRating: **${'⭐'.repeat(newRev.rating)}** (${newRev.rating}/5)\nKomentar: "${newRev.comment}"\n\nAnalisis Sentimen: **${newRev.sentimentLabel.toUpperCase()}** (Score: ${newRev.sentimentScore}/100)\nCrisis Alert Level: **${newRev.isCrisis ? 'YA (Tinggi)' : 'TIDAK'}**`;
-          
-          if (conf.discordEnabled && conf.discordWebhookUrl) {
-            triggerMockWebhook(conf.discordWebhookUrl, { content: webhookMsg });
-            db.logs.push({
-              id: uuid(),
-              tenantId,
-              tenantName: tenantObj.name,
-              eventType: 'notification_sent',
-              channel: 'discord',
-              payload: `Notifikasi instan dikirim ke Discord Webhook karena ulasan baru diterima.`,
-              status: 'success',
-              errorMessage: null,
-              createdAt: new Date().toISOString()
+          try {
+            const notifRes = await originalFetch('/api/stateless/dispatch-notifications', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                tenant: tenantObj,
+                review: newRev,
+                analysis,
+                isTest: false
+              })
             });
-          }
-
-          if (conf.telegramEnabled && conf.telegramBotToken && conf.telegramChatId) {
-            const tgUrl = `https://api.telegram.org/bot${conf.telegramBotToken}/sendMessage`;
-            triggerMockWebhook(tgUrl, { chat_id: conf.telegramChatId, text: webhookMsg });
-            db.logs.push({
-              id: uuid(),
-              tenantId,
-              tenantName: tenantObj.name,
-              eventType: 'notification_sent',
-              channel: 'telegram',
-              payload: `Notifikasi instan dikirm ke Bot Telegram karena ulasan baru diterima.`,
-              status: 'success',
-              errorMessage: null,
-              createdAt: new Date().toISOString()
-            });
+            if (notifRes.ok) {
+              const notifData = await notifRes.json();
+              if (notifData.success && Array.isArray(notifData.logs)) {
+                notifData.logs.forEach((log: any) => {
+                  db.logs.push({
+                    ...log,
+                    id: 'log-' + uuid()
+                  });
+                });
+              }
+            }
+          } catch (err) {
+            console.warn("Failed to dispatch notifications via server-side proxy:", err);
           }
 
           // AI Auto Reply logic
           if (conf.aiAutoReply) {
-            const replyText = generateAiReplyLocal(newRev, tenantObj);
+            let replyText = generateAiReplyLocal(newRev, tenantObj);
+            try {
+              const draftRes = await originalFetch('/api/stateless/ai-draft', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  review: newRev,
+                  tenant: tenantObj
+                })
+              });
+              if (draftRes.ok) {
+                const draftData = await draftRes.json();
+                if (draftData.success && draftData.draft) {
+                  replyText = draftData.draft;
+                }
+              }
+            } catch (err) {
+              console.warn("Fell back to client-side rule auto-reply on error:", err);
+            }
+
             const autoRep: ReviewReply = {
               id: 'reply-' + uuid(),
               reviewId: newRev.id,
@@ -393,6 +426,23 @@ export function setupMockApiInterceptors() {
               errorMessage: null,
               createdAt: new Date().toISOString()
             });
+
+            // Also dispatch reply confirmation notification over proxy
+            try {
+              await originalFetch('/api/stateless/dispatch-notifications', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  tenant: tenantObj,
+                  review: {
+                    ...newRev,
+                    comment: `[Owner Auto-Reply]: "${replyText}"`
+                  },
+                  analysis: null,
+                  isTest: false
+                })
+              });
+            } catch (err) {}
           }
 
           saveLocalDB(db);
@@ -468,38 +518,39 @@ export function setupMockApiInterceptors() {
         const tenantId = path.match(testNotifPattern)![1];
         const tent = db.tenants.find(t => t.id === tenantId);
         if (tent) {
-          const testMsg = `⚠️ [TEST ALERT] Uji coba koneksi sistem reputasi multi-saluran dari Reputation Guard untuk outlet: **${tent.name}**. Integrasi bot dinilai AKTIF!`;
-          const conf = tent.notificationConfigs;
+          const testReview = {
+            id: 'test-review',
+            tenantId,
+            reviewerName: 'Unit Pengetesan Sistem',
+            rating: 1,
+            comment: 'Sistem deteksi eskalasi reputasi otomatis multi-channel aktif!',
+            createdAt: new Date().toISOString()
+          };
 
-          if (conf.discordEnabled && conf.discordWebhookUrl) {
-            triggerMockWebhook(conf.discordWebhookUrl, { content: testMsg });
-            db.logs.push({
-              id: uuid(),
-              tenantId,
-              tenantName: tent.name,
-              eventType: 'notification_sent',
-              channel: 'discord',
-              payload: `Notifikasi UJI COBA berhasil dikirim ke Discord.`,
-              status: 'success',
-              errorMessage: null,
-              createdAt: new Date().toISOString()
+          try {
+            const notifRes = await originalFetch('/api/stateless/dispatch-notifications', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                tenant: tent,
+                review: testReview,
+                analysis: null,
+                isTest: true
+              })
             });
-          }
-
-          if (conf.telegramEnabled && conf.telegramBotToken && conf.telegramChatId) {
-            const tgUrl = `https://api.telegram.org/bot${conf.telegramBotToken}/sendMessage`;
-            triggerMockWebhook(tgUrl, { chat_id: conf.telegramChatId, text: testMsg });
-            db.logs.push({
-              id: uuid(),
-              tenantId,
-              tenantName: tent.name,
-              eventType: 'notification_sent',
-              channel: 'telegram',
-              payload: `Notifikasi UJI COBA berhasil dikirim ke Telegram Chat.`,
-              status: 'success',
-              errorMessage: null,
-              createdAt: new Date().toISOString()
-            });
+            if (notifRes.ok) {
+              const notifData = await notifRes.json();
+              if (notifData.success && Array.isArray(notifData.logs)) {
+                notifData.logs.forEach((log: any) => {
+                  db.logs.push({
+                    ...log,
+                    id: 'log-' + uuid()
+                  });
+                });
+              }
+            }
+          } catch (err) {
+            console.warn("Failed to dispatch test notification via server-side proxy:", err);
           }
 
           saveLocalDB(db);
@@ -637,10 +688,10 @@ export function setupMockApiInterceptors() {
           if (tenantObj) {
             // First: Attempt calling real Gemini secure API routes over HTTP!
             try {
-              const res = await originalFetch(urlStr, {
+              const res = await originalFetch('/api/stateless/ai-draft', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ review: rev, tenant: tenantObj, bypassAuth: true })
+                body: JSON.stringify({ review: rev, tenant: tenantObj })
               });
               if (res.ok) {
                 const data = await res.json();
