@@ -1,0 +1,540 @@
+{
+  "users": [
+    {
+      "id": "user-owner-1",
+      "name": "Budi Santoso",
+      "email": "owner@test.com",
+      "role": "owner",
+      "createdAt": "2026-05-24T04:03:04.254Z"
+    },
+    {
+      "id": "user-reviewer-1",
+      "name": "Siti Rahma",
+      "email": "reviewer@test.com",
+      "role": "reviewer",
+      "createdAt": "2026-05-24T04:03:04.255Z"
+    }
+  ],
+  "tenants": [
+    {
+      "id": "tenant-1",
+      "ownerId": "user-owner-1",
+      "name": "Warung Makan Sederhana",
+      "slug": "warung-makan-sederhana",
+      "category": "restoran",
+      "description": "Restoran keluarga khalayak ramai yang menghidangkan masakan rumahan autentik dengan bumbu rempah tradisi nusantara.",
+      "address": "Jl. Malioboro No. 42, Sleman, Yogyakarta",
+      "phone": "081234567890",
+      "website": "https://warungsederhana.co.id",
+      "openingHours": "Senin - Minggu: 08:00 - 21:00",
+      "coverImage": "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=600&q=80",
+      "avgRating": 3,
+      "totalReviews": 4,
+      "aiConfig": {
+        "brandTone": "friendly",
+        "language": "id",
+        "customContext": "Kami menyajikan makanan segar setiap harinya. Ada promosi potongan harga 20% khusus hari Senin untuk menu Ayam Bakar. Menyediakan area lesehan nyaman dan jaringan internet gratis.",
+        "replyGuidelines": "Gunakan kata sapaan sopan seperti Kak atau Kakak. Tawarkan solusi kompensasi voucher gratis jika ada komplain kebersihan/keterlambatan. Jangan pernah sebut restoran kompetitor.",
+        "strengths": "Rasa gurih tradisional penyajian cepat, harga merakyat, parkir luas aman, bahan baku halal bersertifikat.",
+        "supportContact": "WhatsApp Customer Care: 0812-9988-7766"
+      },
+      "notificationConfigs": {
+        "telegramEnabled": true,
+        "telegramChatId": "1064424022",
+        "telegramBotToken": "8790574809:AAGlbQ7-ed62hEaQdej0u0tm1IPxm0hlNdY",
+        "whatsappEnabled": false,
+        "whatsappNumber": "6281299887766",
+        "whatsappApiKey": "WHAPI_KEY_MOCK",
+        "discordEnabled": true,
+        "discordWebhookUrl": "https://discord.com/api/webhooks/1507953025732579349/JHhZITP0Pbvp3TOitO-QeDiO8SqsXbRUlfHT2zXT2jlfDt9D6CgBPL_ET9IyFvOEDRF7",
+        "notifyOnRatingBelow": 5,
+        "aiAutoReply": true
+      },
+      "createdAt": "2026-05-19T04:03:04.255Z"
+    },
+    {
+      "id": "tenant-2",
+      "ownerId": "user-owner-1",
+      "name": "Klinik Sehat Bersama",
+      "slug": "klinik-sehat-bersama",
+      "category": "klinik",
+      "description": "Klinik kesehatan umum modern yang menyediakan layanan rawat jalan, laboratorium lengkap, serta konsultasi tumbuh kembang anak.",
+      "address": "Ruko Kebayoran Square Blok A-03, Jakarta Selatan",
+      "phone": "021-7223344",
+      "website": "https://kliniksehatbersama.com",
+      "openingHours": "Senin - Sabtu: 07:00 - 20:00",
+      "coverImage": "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=600&q=80",
+      "avgRating": 4.5,
+      "totalReviews": 2,
+      "aiConfig": {
+        "brandTone": "professional",
+        "language": "id",
+        "customContext": "Memiliki 3 dokter spesialis berpengalaman. Menggunakan digital health record agar antrean transparan. Menyediakan apotik internal dengan obat-obatan lengkap terjangkau.",
+        "replyGuidelines": "Sapa menggunakan nama lengkap pasien atau panggilan hormat Bapak/Ibu. Mohon maaf atas keterlambatan antrean jika terjadi kendala operasional. Jaga kerahasiaan medis pasien.",
+        "strengths": "Sistem antrean tertib, kehigienisan ruang tunggu teruji, dokter ramah komunikatif, harga terjangkau masyarakat.",
+        "supportContact": "Layanan Pengaduan Pasien: 021-7223344 (Ext 102) atau email: cs@kliniksehatbersama.com"
+      },
+      "notificationConfigs": {
+        "telegramEnabled": false,
+        "telegramChatId": "",
+        "telegramBotToken": "",
+        "whatsappEnabled": false,
+        "whatsappNumber": "",
+        "whatsappApiKey": "",
+        "discordEnabled": true,
+        "discordWebhookUrl": "https://discord.com/api/webhooks/1507953025732579349/JHhZITP0Pbvp3TOitO-QeDiO8SqsXbRUlfHT2zXT2jlfDt9D6CgBPL_ET9IyFvOEDRF7",
+        "notifyOnRatingBelow": 3,
+        "aiAutoReply": false
+      },
+      "createdAt": "2026-05-21T04:03:04.255Z"
+    }
+  ],
+  "reviews": [
+    {
+      "id": "review-1",
+      "tenantId": "tenant-1",
+      "reviewerName": "Siti Rahma",
+      "rating": 5,
+      "comment": "Masakan rendang di Warung Makan Sederhana ini enak sekali bumbunya betul-betul meresap, harganya juga ramah di kantong.",
+      "sentimentScore": 92,
+      "sentimentLabel": "positive",
+      "topics": [
+        "makanan",
+        "harga"
+      ],
+      "isCrisis": false,
+      "notifiedAt": null,
+      "repliedAt": "2026-05-20T04:03:04.255Z",
+      "createdAt": "2026-05-20T04:02:54.255Z"
+    },
+    {
+      "id": "review-2",
+      "tenantId": "tenant-1",
+      "reviewerName": "Andi Wijaya",
+      "rating": 3,
+      "comment": "Rasa ayam bakar lumayan gurih tapi pelayanan siang ini agak lambat karena antrean yang sangat padat. Semoga bisa dipercepat.",
+      "sentimentScore": 55,
+      "sentimentLabel": "neutral",
+      "topics": [
+        "pelayanan",
+        "ayam bakar"
+      ],
+      "isCrisis": false,
+      "notifiedAt": null,
+      "repliedAt": null,
+      "createdAt": "2026-05-22T04:03:04.255Z"
+    },
+    {
+      "id": "review-3",
+      "tenantId": "tenant-2",
+      "reviewerName": "Rina Herawati",
+      "rating": 5,
+      "comment": "Klinik super wangi dan ber-AC dingin sekali. Dokternya ramah dalam membimbing anak saya saat diperiksa.",
+      "sentimentScore": 95,
+      "sentimentLabel": "very_positive",
+      "topics": [
+        "kebersihan",
+        "dokter",
+        "pelayanan"
+      ],
+      "isCrisis": false,
+      "notifiedAt": null,
+      "repliedAt": "2026-05-23T04:03:04.255Z",
+      "createdAt": "2026-05-22T04:03:04.255Z"
+    },
+    {
+      "id": "review-4",
+      "tenantId": "tenant-2",
+      "reviewerName": "Hendra Saputra",
+      "rating": 4,
+      "comment": "Apoteker kurang senyum waktu serah obat, tapi untungnya dokternya sangat detail dan edukatif.",
+      "sentimentScore": 78,
+      "sentimentLabel": "positive",
+      "topics": [
+        "pelayanan",
+        "dokter",
+        "apotek"
+      ],
+      "isCrisis": false,
+      "notifiedAt": null,
+      "repliedAt": null,
+      "createdAt": "2026-05-23T16:03:04.255Z"
+    },
+    {
+      "id": "review-ihgsr7mg1",
+      "tenantId": "tenant-1",
+      "reviewerName": "INI EL TESTING",
+      "rating": 2,
+      "comment": "JELEKEKEKEKEKLEKLEKLKE",
+      "sentimentScore": 15,
+      "sentimentLabel": "very_negative",
+      "topics": [
+        "umum"
+      ],
+      "isCrisis": false,
+      "notifiedAt": "2026-05-24T04:10:00.729Z",
+      "repliedAt": "2026-05-24T04:36:53.742Z",
+      "createdAt": "2026-05-24T04:10:00.729Z"
+    },
+    {
+      "id": "review-fdqojvh0p",
+      "tenantId": "tenant-1",
+      "reviewerName": "EL Test Ke 2",
+      "rating": 2,
+      "comment": "INI TEST 2222222222",
+      "sentimentScore": 40,
+      "sentimentLabel": "negative",
+      "topics": [
+        "lainnya"
+      ],
+      "isCrisis": false,
+      "notifiedAt": "2026-05-24T04:33:37.084Z",
+      "repliedAt": "2026-05-24T04:35:40.692Z",
+      "createdAt": "2026-05-24T04:33:37.084Z"
+    }
+  ],
+  "replies": [
+    {
+      "id": "reply-1",
+      "reviewId": "review-1",
+      "content": "Terima kasih banyak Kak Siti Rahma atas ulasan positifnya! Senang sekali bumbu rendang khas kami cocok di lidah Kakak. Kami tunggu kunjungan berikutnya ya!",
+      "isAiGenerated": true,
+      "aiDraft": "Terima kasih Kak Siti Rahma atas ulasan positifnya! Senang sekali masakan tradisional nusantara kami disukai. Kami tunggu kedatangan Kakak kembali.",
+      "createdAt": "2026-05-20T04:03:04.255Z"
+    },
+    {
+      "id": "reply-2",
+      "reviewId": "review-3",
+      "content": "Terima kasih Ibu Rina Herawati atas kunjungannya ke Klinik Sehat Bersama. Kami berkomitmen menjaga kenyamanan ruangan dan keramahan dokter demi kesembuhan si kecil.",
+      "isAiGenerated": true,
+      "aiDraft": "Terima kasih atas kepercayaannya Ibu Rina Herawati. Semoga putra/putri senantiasa sehat selalu.",
+      "createdAt": "2026-05-23T04:03:04.255Z"
+    },
+    {
+      "id": "reply-iftcqcvpo",
+      "reviewId": "review-fdqojvh0p",
+      "content": "Halo Kak EL Test Ke 2, terima kasih banyak atas ulasannya untuk Warung Makan Sederhana. Kami memohon maaf yang sebesar-besarnya jika ada pelayanan atau hidangan kami yang kurang memuaskan bagi Kakak. \n\nSebagai restoran keluarga yang mengutamakan cita rasa dan kenyamanan, kami ingin selalu memberikan yang terbaik. Agar kami dapat memperbaiki kualitas pelayanan ke depannya, mohon berkenan membagikan detail kendala yang Kakak alami melalui WhatsApp Customer Care kami di 0812-9988-7766. \n\nMasukan dari Kakak sangat berharga bagi perkembangan usaha kami. Kami berharap bisa menyambut Kakak kembali dengan pelayanan yang jauh lebih baik. Terima kasih, Kak!",
+      "isAiGenerated": true,
+      "aiDraft": "Halo Kak EL Test Ke 2, terima kasih banyak atas ulasannya untuk Warung Makan Sederhana. Kami memohon maaf yang sebesar-besarnya jika ada pelayanan atau hidangan kami yang kurang memuaskan bagi Kakak. \n\nSebagai restoran keluarga yang mengutamakan cita rasa dan kenyamanan, kami ingin selalu memberikan yang terbaik. Agar kami dapat memperbaiki kualitas pelayanan ke depannya, mohon berkenan membagikan detail kendala yang Kakak alami melalui WhatsApp Customer Care kami di 0812-9988-7766. \n\nMasukan dari Kakak sangat berharga bagi perkembangan usaha kami. Kami berharap bisa menyambut Kakak kembali dengan pelayanan yang jauh lebih baik. Terima kasih, Kak!",
+      "createdAt": "2026-05-24T04:35:40.692Z"
+    },
+    {
+      "id": "reply-af9yhse8q",
+      "reviewId": "review-ihgsr7mg1",
+      "content": "Halo Kak INI EL TESTING. Kami memohon maaf yang sebesar-besarnya atas pengalaman kurang menyenangkan yang Kakak rasakan di Warung Makan Sederhana. Kami sangat menyesal jika kualitas pelayanan atau hidangan kami belum berhasil memenuhi harapan Kakak. \n\nKami sangat ingin mendengar lebih detail mengenai kendala yang Kakak hadapi agar kami dapat segera melakukan evaluasi dan perbaikan. Mohon kesediaan Kakak untuk menghubungi kami melalui WhatsApp Customer Care di nomor 0812-9988-7766 agar kami bisa membantu memberikan solusi terbaik.\n\nTerima kasih banyak atas masukan berharga ini, Kak. Kami berharap bisa mendapatkan kesempatan untuk menyambut Kakak kembali dengan pelayanan yang jauh lebih baik.",
+      "isAiGenerated": true,
+      "aiDraft": "Halo Kak INI EL TESTING. Kami memohon maaf yang sebesar-besarnya atas pengalaman kurang menyenangkan yang Kakak rasakan di Warung Makan Sederhana. Kami sangat menyesal jika kualitas pelayanan atau hidangan kami belum berhasil memenuhi harapan Kakak. \n\nKami sangat ingin mendengar lebih detail mengenai kendala yang Kakak hadapi agar kami dapat segera melakukan evaluasi dan perbaikan. Mohon kesediaan Kakak untuk menghubungi kami melalui WhatsApp Customer Care di nomor 0812-9988-7766 agar kami bisa membantu memberikan solusi terbaik.\n\nTerima kasih banyak atas masukan berharga ini, Kak. Kami berharap bisa mendapatkan kesempatan untuk menyambut Kakak kembali dengan pelayanan yang jauh lebih baik.",
+      "createdAt": "2026-05-24T04:36:53.742Z"
+    }
+  ],
+  "logs": [
+    {
+      "id": "log-1",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "tenant_created",
+      "channel": "system",
+      "payload": "Tenant Warung Makan Sederhana berhasil didaftarkan ke sistem.",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-19T04:03:04.255Z"
+    },
+    {
+      "id": "log-2",
+      "tenantId": "tenant-2",
+      "tenantName": "Klinik Sehat Bersama",
+      "eventType": "tenant_created",
+      "channel": "system",
+      "payload": "Tenant Klinik Sehat Bersama berhasil didaftarkan ke sistem.",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-20T04:03:04.255Z"
+    },
+    {
+      "id": "log-3",
+      "tenantId": "tenant-2",
+      "tenantName": "Klinik Sehat Bersama",
+      "eventType": "review_received",
+      "channel": "system",
+      "payload": "Review baru diterima dari Hendra Saputra dengan rating 4 ⭐.",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-23T16:03:04.255Z"
+    },
+    {
+      "id": "izsxz4ml7",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "review_received",
+      "channel": "system",
+      "payload": "Review NEGATIF terdeteksi untuk Warung Makan Sederhana. Dari Reviewer Simulasi (Tes) (Rating 1).",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:05:07.193Z"
+    },
+    {
+      "id": "h5r1vy1sb",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "notification_sent",
+      "channel": "discord",
+      "payload": "Berhasil mengirim alert review negatif ke Discord Webhook untuk Warung Makan Sederhana.",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:05:07.536Z"
+    },
+    {
+      "id": "2x9f8vvmg",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "notification_sent",
+      "channel": "telegram",
+      "payload": "Berhasil mengirimkan notifikasi SOS ke Telegram Chat ID: 1507952899966369854.",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:05:07.536Z"
+    },
+    {
+      "id": "vvcw1a34d",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "review_received",
+      "channel": "system",
+      "payload": "Review NEGATIF terdeteksi untuk Warung Makan Sederhana. Dari Reviewer Simulasi (Tes) (Rating 1).",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:08:18.146Z"
+    },
+    {
+      "id": "e3k58832y",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "notification_sent",
+      "channel": "discord",
+      "payload": "Berhasil mengirim alert review negatif ke Discord Webhook untuk Warung Makan Sederhana.",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:08:18.545Z"
+    },
+    {
+      "id": "8edjc82yx",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "notification_sent",
+      "channel": "telegram",
+      "payload": "Berhasil mengirimkan notifikasi SOS ke Telegram Chat ID: 1507952899966369854.",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:08:18.545Z"
+    },
+    {
+      "id": "6vl6sl1tx",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "review_received",
+      "channel": "system",
+      "payload": "Review NEGATIF terdeteksi untuk Warung Makan Sederhana. Dari Reviewer Simulasi (Tes) (Rating 1).",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:08:43.167Z"
+    },
+    {
+      "id": "31mpvi219",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "notification_sent",
+      "channel": "discord",
+      "payload": "Berhasil mengirim alert review negatif ke Discord Webhook untuk Warung Makan Sederhana.",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:08:43.552Z"
+    },
+    {
+      "id": "je7aimj77",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "notification_sent",
+      "channel": "telegram",
+      "payload": "Berhasil mengirimkan notifikasi SOS ke Telegram Chat ID: 1507952899966369854.",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:08:43.552Z"
+    },
+    {
+      "id": "at0nw6wt2",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "sentiment_analyzed",
+      "channel": "system",
+      "payload": "Aktivasi Gemini menganut sentimen: VERY_NEGATIVE (Score: 15/100) mengenai review INI EL TESTING.",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:10:00.729Z"
+    },
+    {
+      "id": "eip7ksjmz",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "review_received",
+      "channel": "system",
+      "payload": "Review NEGATIF terdeteksi untuk Warung Makan Sederhana. Dari INI EL TESTING (Rating 2).",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:10:00.729Z"
+    },
+    {
+      "id": "ulnap516c",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "notification_sent",
+      "channel": "discord",
+      "payload": "Berhasil mengirim alert review negatif ke Discord Webhook untuk Warung Makan Sederhana.",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:10:01.208Z"
+    },
+    {
+      "id": "4t5otyq9v",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "notification_sent",
+      "channel": "telegram",
+      "payload": "Berhasil mengirimkan notifikasi SOS ke Telegram Chat ID: 1507952899966369854.",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:10:01.208Z"
+    },
+    {
+      "id": "u1ze2y1b1",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "review_received",
+      "channel": "system",
+      "payload": "Review NEGATIF terdeteksi untuk Warung Makan Sederhana. Dari Reviewer Simulasi (Tes) (Rating 1).",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:32:23.491Z"
+    },
+    {
+      "id": "c16havtzl",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "notification_sent",
+      "channel": "discord",
+      "payload": "Berhasil mengirim alert review negatif ke Discord Webhook untuk Warung Makan Sederhana.",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:32:23.933Z"
+    },
+    {
+      "id": "knn5f2v6v",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "notification_sent",
+      "channel": "telegram",
+      "payload": "Berhasil mengirimkan alert SOS ke Telegram Chat ID: 1064424022.",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:32:25.549Z"
+    },
+    {
+      "id": "63c46d2l3",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "sentiment_analyzed",
+      "channel": "system",
+      "payload": "Aktivasi Gemini menganut sentimen: NEGATIVE (Score: 40/100) mengenai review EL Test Ke 2.",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:33:37.084Z"
+    },
+    {
+      "id": "7r1ldige3",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "review_received",
+      "channel": "system",
+      "payload": "Review NEGATIF terdeteksi untuk Warung Makan Sederhana. Dari EL Test Ke 2 (Rating 2).",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:33:37.084Z"
+    },
+    {
+      "id": "dav6toycn",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "notification_sent",
+      "channel": "discord",
+      "payload": "Berhasil mengirim alert review negatif ke Discord Webhook untuk Warung Makan Sederhana.",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:33:37.549Z"
+    },
+    {
+      "id": "lxdsuq360",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "notification_sent",
+      "channel": "telegram",
+      "payload": "Berhasil mengirimkan alert SOS ke Telegram Chat ID: 1064424022.",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:33:38.459Z"
+    },
+    {
+      "id": "mu6y33baq",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "reply_sent",
+      "channel": "system",
+      "payload": "Owner membalas ulasan dari EL Test Ke 2 (Moted AI: Tidak).",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:35:13.083Z"
+    },
+    {
+      "id": "76jtboftu",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "reply_drafted",
+      "channel": "system",
+      "payload": "Draft balasan AI berhasil diformulasikan untuk review: \"EL Test Ke 2\".",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:35:38.164Z"
+    },
+    {
+      "id": "4mxzxv1r6",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "reply_sent",
+      "channel": "system",
+      "payload": "Owner membalas ulasan dari EL Test Ke 2 (Moted AI: Ya).",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:35:40.692Z"
+    },
+    {
+      "id": "vfvezjzwt",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "reply_drafted",
+      "channel": "system",
+      "payload": "Draft balasan AI berhasil diformulasikan untuk review: \"INI EL TESTING\".",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:36:51.657Z"
+    },
+    {
+      "id": "s3vr5sqy5",
+      "tenantId": "tenant-1",
+      "tenantName": "Warung Makan Sederhana",
+      "eventType": "reply_sent",
+      "channel": "system",
+      "payload": "Owner membalas ulasan dari INI EL TESTING (Moted AI: Ya).",
+      "status": "success",
+      "errorMessage": null,
+      "createdAt": "2026-05-24T04:36:53.743Z"
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Reputation Shield",
+  "description": "AI-powered sentiment analysis & instant multi-channel crisis notification system for business reviews.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
