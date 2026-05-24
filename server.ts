@@ -16,7 +16,10 @@ const PORT = 3000;
 app.use(express.json());
 
 // Path to JSON Database store
-const DB_FILE = path.join(process.cwd(), 'db_store.json');
+const isVercel = process.env.VERCEL === '1' || !!process.env.VERCEL;
+const DB_FILE = isVercel 
+  ? path.join('/tmp', 'db_store.json')
+  : path.join(process.cwd(), 'db_store.json');
 
 // Helper to generate IDs
 const uuid = () => Math.random().toString(36).substring(2, 11);
@@ -245,6 +248,16 @@ const getInitialState = (): DBState => {
 const readDB = (): DBState => {
   try {
     if (!fs.existsSync(DB_FILE)) {
+      if (isVercel) {
+        // Seed the temp file from the project root db_store.json
+        const seedPath = path.join(process.cwd(), 'db_store.json');
+        if (fs.existsSync(seedPath)) {
+          console.log(`[Vercel DB Init] Seeding /tmp/db_store.json from ${seedPath}`);
+          const contents = fs.readFileSync(seedPath, 'utf-8');
+          fs.writeFileSync(DB_FILE, contents);
+          return JSON.parse(contents);
+        }
+      }
       const initial = getInitialState();
       fs.writeFileSync(DB_FILE, JSON.stringify(initial, null, 2));
       return initial;
@@ -1337,6 +1350,11 @@ app.post('/api/simulator/reset', (req, res) => {
 
 // Setup Vite Dev server or Serve static files
 const startServer = async () => {
+  if (isVercel) {
+    console.log('[Reputation Shield Server] In Vercel serverless environment. Skipping TCP listen.');
+    return;
+  }
+
   if (process.env.NODE_ENV !== 'production') {
     const vite = await createViteServer({
       server: {middlewareMode: true},
@@ -1359,3 +1377,5 @@ const startServer = async () => {
 startServer().catch(err => {
   console.error('Server failed to start:', err);
 });
+
+export default app;
