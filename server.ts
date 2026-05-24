@@ -248,13 +248,47 @@ const readDB = (): DBState => {
   try {
     if (!fs.existsSync(DB_FILE)) {
       if (isVercel) {
-        // Seed the temp file from the project root db_store.json
-        const seedPath = path.join(process.cwd(), 'db_store.json');
-        if (fs.existsSync(seedPath)) {
-          console.log(`[Vercel DB Init] Seeding /tmp/db_store.json from ${seedPath}`);
-          const contents = fs.readFileSync(seedPath, 'utf-8');
-          fs.writeFileSync(DB_FILE, contents);
-          return JSON.parse(contents);
+        console.log(`[Vercel DB Init] DB file does not exist at ${DB_FILE}. Searching for seed file...`);
+        
+        // Dynamic search for db_store.json seed in a serverless environment
+        const candidates = [
+          path.join(process.cwd(), 'db_store.json'),
+          path.join(process.cwd(), '..', 'db_store.json'),
+          path.join(process.cwd(), 'api', 'db_store.json'),
+          'db_store.json',
+          '../db_store.json'
+        ];
+        
+        // Safely check if __dirname exists in the current runtime context
+        try {
+          if (typeof __dirname !== 'undefined' && __dirname) {
+            candidates.push(path.join(__dirname, 'db_store.json'));
+            candidates.push(path.join(__dirname, '..', 'db_store.json'));
+            candidates.push(path.join(__dirname, '..', '..', 'db_store.json'));
+          }
+        } catch (e) {
+          // __dirname handles are undefined in pure ES module environments
+        }
+
+        let seeded = false;
+        for (const candidatePath of candidates) {
+          try {
+            const resolvedPath = path.resolve(candidatePath);
+            console.log(`[Vercel DB Init] Checking candidate: ${resolvedPath}`);
+            if (fs.existsSync(resolvedPath)) {
+              console.log(`[Vercel DB Init] Found seed file at ${resolvedPath}. Seeding to ${DB_FILE}`);
+              const contents = fs.readFileSync(resolvedPath, 'utf-8');
+              fs.writeFileSync(DB_FILE, contents);
+              seeded = true;
+              return JSON.parse(contents);
+            }
+          } catch (seedErr) {
+            console.warn(`[Vercel DB Init] Failed checking candidate ${candidatePath}:`, seedErr);
+          }
+        }
+
+        if (!seeded) {
+          console.warn('[Vercel DB Init] No seed file found. Initializing draft baseline.');
         }
       }
       const initial = getInitialState();
